@@ -11,6 +11,7 @@ constructor(props){
     duration: "5",
     durationType: "days",
     instructions: "After Meal",
+    medicineName: "",
     medicine: "",
     medicineGroup: [],
     medicineSuggestion: [],
@@ -67,8 +68,11 @@ addMedicince(){
 }
 
 handleListClick(e){
+  // e.parentElement.style.visibility = "hidden";
   this.setState({
-    medicine: e.target.className
+    medicine: e.target.className,
+    medicineName: e.target.className
+  },()=>{
   })
 }
 
@@ -77,7 +81,7 @@ clearMedicine(medicine){
   const index = temparray.indexOf(medicine);
   if (index > -1) {
   temparray.splice(index, 1);
-  this.setState({
+  this.setState({ 
     medicineGroup: temparray
   })
 }
@@ -98,7 +102,7 @@ handleChangeFunction(e){
   })
   .then(rslt=>{
     this.setState({
-      medicineSuggestion: rslt.data.MedicineList
+      medicineSuggestion: rslt.data.MedicineList.slice(0, 10).map(i =>{return i.Name})
     })
   })
   .catch(err=>{
@@ -113,7 +117,7 @@ handleConcatFunction(e){
     // medicine: this.state.frequency + this.state.duration + this.state.instructions
   }, ()=>{
     this.setState({
-      medicine: this.state.frequency + " for " + this.state.duration + " " + this.state.durationType + " " + this.state.instructions
+      medicine: this.state.medicineName + " " + this.state.frequency + " for " + this.state.duration + " " + this.state.durationType + " " + this.state.instructions
     })
   })
 }
@@ -127,9 +131,9 @@ handleConcatFunction(e){
             <Form.Control value={this.state.medicine} placeholder="Search Medicine" type="text" onChange={this.handleChangeFunction}/>
             {(this.state.medicineSuggestion.length>0 && this.state.medicine.length > 3)?
               <ListGroup>
-              <div style={{height: '200px', overflow: 'scroll'}}>
+              <div style={{height: '200px', overflow: 'scroll', visibility: "visible"}}>
                 {this.state.medicineSuggestion.map(medicine=>{
-                  return <ListGroup.Item style={{cursor: "pointer"}} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick={this.handleListClick} className={medicine.Name}>{medicine.Name}</ListGroup.Item>
+                  return <p style={{cursor: "pointer"}} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick={this.handleListClick} className={medicine}>{medicine}</p>
                 })}
               </div>
               </ListGroup>
