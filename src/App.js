@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './App.css';
 import { Container, Form, Row, Col, Button, Dropdown, ButtonGroup, ButtonToolbar, ToggleButtonGroup, ToggleButton, Alert } from 'react-bootstrap';
 import Axios from 'axios';
 
@@ -7,7 +8,7 @@ constructor(props){
   super(props);
   this.state = {
     frequency: "101",
-    duration: "1",
+    duration: "5",
     durationType: "days",
     instructions: "After Meal",
     medicine: "",
@@ -17,6 +18,7 @@ constructor(props){
   this.handleChangeFunction = this.handleChangeFunction.bind(this);
   this.addMedicince = this.addMedicince.bind(this);
   this.clearMedicine = this.clearMedicine.bind(this);
+  this.handleDuration = this.handleDuration.bind(this);
 }
 
 componentDidMount(){
@@ -37,10 +39,27 @@ componentDidMount(){
   })
 }
 
+handleDuration(){
+  let durationArray = ["days", "weeks", "months"];
+  let index = durationArray.indexOf(this.state.durationType);
+
+  if(index == 3){
+    this.setState({
+      durationType: durationArray[0]
+    })
+  }
+  else{
+    this.setState({
+      durationType: durationArray[index+1]
+    })
+  }
+}
+
 addMedicince(){
   let prevState = this.state.medicineGroup;
   prevState.push(this.state.medicine);
   this.setState(({
+    medicine: "",
     medicineGroup: prevState
   }))
 }
@@ -54,17 +73,9 @@ clearMedicine(medicine){
     medicineGroup: temparray
   })
 }
-  // let prevState = this.state.medicineGroup;
-  // prevState.filter(item => item !== medicine)
-  // console.log(prevState);
-  // this.setState({
-  //   medicineGroup: prevState
-  // })
 }
 
 handleChangeFunction(e){
- 
-
   this.setState({
     medicine: e.target.value
   })
@@ -76,7 +87,7 @@ handleConcatFunction(e){
     // medicine: this.state.frequency + this.state.duration + this.state.instructions
   }, ()=>{
     this.setState({
-      medicine: this.state.frequency + "/" + this.state.duration +  this.state.durationType + "/" + this.state.instructions
+      medicine: this.state.frequency + " for " + this.state.duration + " " + this.state.durationType + " " + this.state.instructions
     })
   })
 }
@@ -95,10 +106,12 @@ handleConcatFunction(e){
             </Col>
             <Col xs={9}>
             <ButtonToolbar>
-            <ToggleButtonGroup type="radio" name="frequency" defaultValue={101} onClick={this.handleConcatFunction}>
-              <ToggleButton variant="outline-info" value={101}>101</ToggleButton>
-              <ToggleButton variant="outline-info" value={111}>111</ToggleButton>
-              <ToggleButton variant="outline-info" value={110}>110</ToggleButton>
+            <ToggleButtonGroup type="radio" name="frequency" defaultValue={"1-0-1"} onClick={this.handleConcatFunction}>
+              <ToggleButton variant="outline-info" value={"1-1-1"}>1-1-1</ToggleButton>
+              <ToggleButton variant="outline-info" value={"1-0-1"}>1-0-1</ToggleButton>
+              <ToggleButton variant="outline-info" value={"1-1-1-1"}>1-1-1-1</ToggleButton>
+              <ToggleButton variant="outline-info" value={"1-0-0"}>1-0-0</ToggleButton>
+              <ToggleButton variant="outline-info" value={"S.O.S"}>S.O.S</ToggleButton>
             </ToggleButtonGroup>
             </ButtonToolbar>
             </Col>
@@ -110,23 +123,19 @@ handleConcatFunction(e){
             </Col>
             <Col xs={2}>
             <ButtonToolbar>
-              <ToggleButtonGroup type="radio" name="duration" defaultValue={1} onClick={this.handleConcatFunction}>
-                <ToggleButton variant="outline-info" value={1}>1</ToggleButton>
-                <ToggleButton variant="outline-info" value={2}>2</ToggleButton>
+              <ToggleButtonGroup type="radio" name="duration" defaultValue={5} onClick={this.handleConcatFunction}>
                 <ToggleButton variant="outline-info" value={3}>3</ToggleButton>
-                <ToggleButton variant="outline-info" value={4}>4</ToggleButton>
                 <ToggleButton variant="outline-info" value={5}>5</ToggleButton>
-                <ToggleButton variant="outline-info" value={6}>6</ToggleButton>
-                <ToggleButton variant="outline-info"  value={7}>7</ToggleButton>
+                <ToggleButton variant="outline-info" value={7}>7</ToggleButton>
+                <ToggleButton variant="outline-info" value={15}>15</ToggleButton>
+                <ToggleButton variant="outline-info" value={30}>30</ToggleButton>
               </ToggleButtonGroup>
             </ButtonToolbar>
             </Col>
             <Col xs={{span: 2, offset: 1}}>
             <ButtonToolbar>
               <ToggleButtonGroup type="radio" name="durationType" defaultValue={"days"} onClick={this.handleConcatFunction}>
-                <ToggleButton variant="outline-info" value={"days"}>days</ToggleButton>
-                <ToggleButton variant="outline-info" value={"weeks"}>weeks</ToggleButton>
-                <ToggleButton variant="outline-info" value={"months"}>months</ToggleButton>
+                <ToggleButton variant="outline-info" value={this.state.durationType} onClick={this.handleDuration}>{this.state.durationType}</ToggleButton>
               </ToggleButtonGroup>
             </ButtonToolbar>
             </Col>
@@ -139,7 +148,7 @@ handleConcatFunction(e){
             <Col xs={9}>
               <ButtonToolbar>
               <ToggleButtonGroup type="radio" name="instructions" defaultValue={"After Meal"} onClick={this.handleConcatFunction}>
-                <ToggleButton variant="outline-info" value={"Before Meal"}>Befor Meal</ToggleButton>
+                <ToggleButton variant="outline-info" value={"Before Meal"}>Before Meal</ToggleButton>
                 <ToggleButton variant="outline-info" value={"After Meal"}>After Meal</ToggleButton>
               </ToggleButtonGroup>
               </ButtonToolbar>
