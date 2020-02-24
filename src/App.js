@@ -91,7 +91,7 @@ handleChangeFunction(e){
   this.setState({
     medicine: e.target.value
   }, ()=>{
-    Axios.get("http://localhost:4400/rest/masterListrx/medicine", {
+    Axios.get("http://13.71.4.239:4401/rest/masterListrx/medicine", {
     headers: {
       "Content-Type": "application/json",
       "Ocp-Apim-Subscription-Key": "a42d2bc16d9142c8bb598d3e40f4ba24"
