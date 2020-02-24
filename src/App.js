@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Container, Form, Row, Col, Button, Dropdown, ButtonGroup, ButtonToolbar, ToggleButtonGroup, ToggleButton, Alert } from 'react-bootstrap';
+import { Container, Form, Row, Col, Button, Dropdown, ButtonGroup, ButtonToolbar, ToggleButtonGroup, ToggleButton, Alert, ListGroup } from 'react-bootstrap';
 import Axios from 'axios';
 
 export default class App extends Component {
@@ -12,30 +12,32 @@ constructor(props){
     durationType: "days",
     instructions: "After Meal",
     medicine: "",
-    medicineGroup: []
+    medicineGroup: [],
+    medicineSuggestion: [],
+    toggleHover: false,
   }
   this.handleConcatFunction = this.handleConcatFunction.bind(this);
   this.handleChangeFunction = this.handleChangeFunction.bind(this);
   this.addMedicince = this.addMedicince.bind(this);
   this.clearMedicine = this.clearMedicine.bind(this);
   this.handleDuration = this.handleDuration.bind(this);
+  this.handleListClick = this.handleListClick.bind(this);
+  this.toggleHover = this.toggleHover.bind(this);
+}
+
+componentDidUpdate(){
+  console.log(this.state.medicine);
+  console.log(this.state.medicineSuggestion);
 }
 
 componentDidMount(){
-  Axios.get("https://bfhlapiservice.azure-api.net/self-learning-dev/rest/masterListrx/medicine", {
-    headers: {
-      "Content-Type": "application/json",
-      "Ocp-Apim-Subscription-Key": "a42d2bc16d9142c8bb598d3e40f4ba24"
-    },
-    params: {
-      name: "dolo"
-    },
-  })
-  .then(rslt=>{
-    console.log(rslt);
-  })
-  .catch(err=>{
-    console.log(err);
+
+}
+
+toggleHover(e){
+  console.log(e.target);
+  this.setState({
+    toggleHover: !this.toggleHover
   })
 }
 
@@ -64,6 +66,12 @@ addMedicince(){
   }))
 }
 
+handleListClick(e){
+  this.setState({
+    medicine: e.target.className
+  })
+}
+
 clearMedicine(medicine){
   const temparray = this.state.medicineGroup;
   const index = temparray.indexOf(medicine);
@@ -78,6 +86,24 @@ clearMedicine(medicine){
 handleChangeFunction(e){
   this.setState({
     medicine: e.target.value
+  }, ()=>{
+    Axios.get("http://localhost:4400/rest/masterListrx/medicine", {
+    headers: {
+      "Content-Type": "application/json",
+      "Ocp-Apim-Subscription-Key": "a42d2bc16d9142c8bb598d3e40f4ba24"
+    },
+    params: {
+      name: this.state.medicine
+    },
+  })
+  .then(rslt=>{
+    this.setState({
+      medicineSuggestion: rslt.data.MedicineList
+    })
+  })
+  .catch(err=>{
+    console.log(err);
+  })
   })
 }
 
@@ -99,6 +125,15 @@ handleConcatFunction(e){
         <Form>
           <Form.Group controlId="formGridAddress1">
             <Form.Control value={this.state.medicine} placeholder="Search Medicine" type="text" onChange={this.handleChangeFunction}/>
+            {(this.state.medicineSuggestion.length>0 && this.state.medicine.length > 3)?
+              <ListGroup>
+              <div style={{height: '200px', overflow: 'scroll'}}>
+                {this.state.medicineSuggestion.map(medicine=>{
+                  return <ListGroup.Item style={{cursor: "pointer"}} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover} onClick={this.handleListClick} className={medicine.Name}>{medicine.Name}</ListGroup.Item>
+                })}
+              </div>
+              </ListGroup>
+            :<></>}
             <hr/>
             <Row>
             <Col xs={3}>
